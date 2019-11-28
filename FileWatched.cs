@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace AutoManagerVideoFile
 {
@@ -52,27 +47,13 @@ namespace AutoManagerVideoFile
                 File.Delete(path);
             }
             File.Move(from, path);
-            showNotify(path);
+            Background.trayIcon.ShowBalloonTip(30000);
         }
 
         private static string getToday()
         {
             DateTime now = DateTime.Now;
             return now.ToString("dd-MM-yyyy");
-        }
-
-        private static void showNotify(string fileMovedPath)
-        {
-            var notification = new System.Windows.Forms.NotifyIcon()
-            {
-                Visible = true,
-                Icon = System.Drawing.SystemIcons.Information,
-                BalloonTipTitle = "Balloon Tip Title",
-                BalloonTipText = "Phát hiện video mới",
-                BalloonTipIcon = ToolTipIcon.Error
-            };
-
-            notification.ShowBalloonTip(30000);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace AutoManagerVideoFile
 {
     class Background : ApplicationContext
     {
-        private NotifyIcon trayIcon;
+        public static NotifyIcon trayIcon;
 
         public Background()
         {
@@ -18,6 +18,9 @@ namespace AutoManagerVideoFile
                     new MenuItem("Cài đặt", Setting),
                     new MenuItem("Thoát", Exit)
                 }),
+                BalloonTipTitle = "Phát hiện video mới",
+                BalloonTipText = "Hệ thống đã phát hiện một video mới được thêm vào thư mục",
+                BalloonTipIcon = ToolTipIcon.Info,
                 Visible = true
             };
 
