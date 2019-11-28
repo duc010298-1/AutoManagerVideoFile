@@ -14,12 +14,13 @@ namespace AutoManagerVideoFile
             trayIcon = new NotifyIcon()
             {
                 Icon = Resources.video_file,
+                Text = "Quản lý video file",
                 ContextMenu = new ContextMenu(new MenuItem[] {
                     new MenuItem("Cài đặt", Setting),
                     new MenuItem("Thoát", Exit)
                 }),
                 BalloonTipTitle = "Phát hiện video mới",
-                BalloonTipText = "Hệ thống đã phát hiện một video mới được thêm vào thư mục",
+                BalloonTipText = "",
                 BalloonTipIcon = ToolTipIcon.Info,
                 Visible = true
             };

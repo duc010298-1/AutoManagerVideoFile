@@ -36,6 +36,7 @@ namespace AutoManagerVideoFile
 
         private static void moveFile(string from, string fileName)
         {
+            fileName = Path.GetFileNameWithoutExtension(fileName) + "_" + generateRandomString() + Path.GetExtension(fileName);
             string path = Path.Combine(config.OutDirectory + "\\" + getToday());
             if (!Directory.Exists(path))
             {
@@ -47,6 +48,7 @@ namespace AutoManagerVideoFile
                 File.Delete(path);
             }
             File.Move(from, path);
+            Background.trayIcon.BalloonTipText = fileName + "\nClick vào đây để đổi tên file";
             Background.trayIcon.ShowBalloonTip(30000);
         }
 
@@ -54,6 +56,20 @@ namespace AutoManagerVideoFile
         {
             DateTime now = DateTime.Now;
             return now.ToString("dd-MM-yyyy");
+        }
+
+        private static string generateRandomString()
+        {
+            var chars = "0123456789";
+            var stringChars = new char[6];
+            var random = new Random();
+
+            for (int i = 0; i < stringChars.Length; i++)
+            {
+                stringChars[i] = chars[random.Next(chars.Length)];
+            }
+
+            return new String(stringChars);
         }
     }
 }
