@@ -5,7 +5,7 @@ namespace AutoManagerVideoFile
 {
     class FileWatched
     {
-        private static readonly string filter = (string) Properties.Settings.Default["videoFilter"];
+        private static readonly string filter = "*.txt";
         public static FileSystemWatcher watcher;
         public static Config config;
         public static void initWatched(Config c)

@@ -22,14 +22,5 @@ namespace AutoManagerVideoFile.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("*.txt")]
-        public string videoFilter {
-            get {
-                return ((string)(this["videoFilter"]));
-            }
-        }
     }
 }
