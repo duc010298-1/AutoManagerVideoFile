@@ -36,6 +36,7 @@
             this.btnOutputDirectory = new System.Windows.Forms.Button();
             this.btnSaveSetting = new System.Windows.Forms.Button();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.checkBoxStartWithWindows = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -95,7 +96,7 @@
             // btnSaveSetting
             // 
             this.btnSaveSetting.Enabled = false;
-            this.btnSaveSetting.Location = new System.Drawing.Point(12, 112);
+            this.btnSaveSetting.Location = new System.Drawing.Point(12, 130);
             this.btnSaveSetting.Name = "btnSaveSetting";
             this.btnSaveSetting.Size = new System.Drawing.Size(532, 23);
             this.btnSaveSetting.TabIndex = 6;
@@ -103,11 +104,22 @@
             this.btnSaveSetting.UseVisualStyleBackColor = true;
             this.btnSaveSetting.Click += new System.EventHandler(this.btnSaveSetting_Click);
             // 
+            // checkBoxStartWithWindows
+            // 
+            this.checkBoxStartWithWindows.AutoSize = true;
+            this.checkBoxStartWithWindows.Location = new System.Drawing.Point(15, 98);
+            this.checkBoxStartWithWindows.Name = "checkBoxStartWithWindows";
+            this.checkBoxStartWithWindows.Size = new System.Drawing.Size(149, 17);
+            this.checkBoxStartWithWindows.TabIndex = 7;
+            this.checkBoxStartWithWindows.Text = "Khởi động cùng Windows";
+            this.checkBoxStartWithWindows.UseVisualStyleBackColor = true;
+            // 
             // Setting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(556, 147);
+            this.ClientSize = new System.Drawing.Size(556, 165);
+            this.Controls.Add(this.checkBoxStartWithWindows);
             this.Controls.Add(this.btnSaveSetting);
             this.Controls.Add(this.btnOutputDirectory);
             this.Controls.Add(this.btnInputDirectory);
@@ -136,5 +148,6 @@
         private System.Windows.Forms.Button btnOutputDirectory;
         private System.Windows.Forms.Button btnSaveSetting;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
+        private System.Windows.Forms.CheckBox checkBoxStartWithWindows;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Windows.Forms;
 
 namespace AutoManagerVideoFile
@@ -20,6 +21,15 @@ namespace AutoManagerVideoFile
                 txtInputDirectory.Text = config.InputDirectory;
                 txtOutputDirectory.Text = config.OutDirectory;
                 btnSaveSetting.Enabled = true;
+            }
+            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+            if (registryKey.GetValue("AutoManagerVideoFile") == null)
+            {
+                checkBoxStartWithWindows.Checked = false;
+            }
+            else
+            {
+                checkBoxStartWithWindows.Checked = true;
             }
         }
 
@@ -61,6 +71,16 @@ namespace AutoManagerVideoFile
 
         private void btnSaveSetting_Click(object sender, EventArgs e)
         {
+            if (checkBoxStartWithWindows.Checked)
+            {
+                RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                registryKey.SetValue("AutoManagerVideoFile", Application.ExecutablePath);
+            }
+            else
+            {
+                RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                registryKey.DeleteValue("AutoManagerVideoFile", false);
+            }
             ConfigUtil configUtil = new ConfigUtil();
             configUtil.saveConfig(config);
             FileWatched.initWatched(config);

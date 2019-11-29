@@ -1,9 +1,5 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace AutoManagerVideoFile
+﻿namespace AutoManagerVideoFile
 {
-    [Serializable]
     class Config
     {
         public string InputDirectory;

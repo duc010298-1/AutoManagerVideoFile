@@ -1,53 +1,38 @@
-﻿using System;
+﻿using Microsoft.Win32;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows.Forms;
 
 namespace AutoManagerVideoFile
 {
     class ConfigUtil
     {
-        private readonly string fileConfigName = "config.dat";
         public void saveConfig(Config config)
         {
-            FileStream fs = new FileStream(fileConfigName, FileMode.Create);
-            BinaryFormatter formatter = new BinaryFormatter();
-            try
-            {
-                formatter.Serialize(fs, config);
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show("Failed to create new file!\nReason: " + exception.Message, "Take an error!", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-            }
-            finally
-            {
-                fs.Close();
-            }
+            RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\AutoManagerVideoFile");
+
+            key.SetValue("InputDirectory", config.InputDirectory);
+            key.SetValue("OutputDirectory", config.OutDirectory);
+            key.Close();
         }
 
         public Config getConfig()
         {
-            if (!File.Exists(fileConfigName))
-            {
-                return null;
-            }
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\AutoManagerVideoFile");
 
-            FileStream serializationStream = new FileStream(fileConfigName, FileMode.Open);
-            try
+            if (key != null)
             {
-                BinaryFormatter formatter = new BinaryFormatter();
-                Config config = (Config)formatter.Deserialize(serializationStream);
+                Config config = new Config();
+                config.InputDirectory = (string)key.GetValue("InputDirectory");
+                config.OutDirectory = (string)key.GetValue("OutputDirectory");
+                key.Close();
+                if (!Directory.Exists(config.InputDirectory) || !Directory.Exists(config.OutDirectory))
+                {
+                    return null;
+                }
                 return config;
             }
-            catch (Exception exception)
+            else
             {
-                MessageBox.Show("Failed to create new file!\nReason: " + exception.Message, "Take an error!", MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return null;
-            }
-            finally
-            {
-                serializationStream.Close();
             }
         }
     }
