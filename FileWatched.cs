@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Windows.Forms;
 
 namespace AutoManagerVideoFile
 {
@@ -31,23 +32,31 @@ namespace AutoManagerVideoFile
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
             moveFile(e.FullPath, e.Name);
-            Console.WriteLine($"File: {e.FullPath} {e.ChangeType}");
         }
 
         private static void moveFile(string from, string fileName)
         {
             fileName = Path.GetFileNameWithoutExtension(fileName) + "_" + generateRandomString() + Path.GetExtension(fileName);
-            string path = Path.Combine(config.OutDirectory + "\\" + getToday());
+            string path = Path.Combine(config.OutDirectory, getToday());
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
-            path = Path.Combine(path + "\\" + fileName);
+            path = Path.Combine(path, fileName);
             if (File.Exists(path))
             {
                 File.Delete(path);
             }
-            File.Move(from, path);
+            try
+            {
+                File.Move(from, path);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Lỗi! File chưa được di chuyển", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Background.tempPath = path;
             Background.trayIcon.BalloonTipText = fileName + "\nClick vào đây để đổi tên file";
             Background.trayIcon.ShowBalloonTip(30000);
         }
@@ -58,7 +67,7 @@ namespace AutoManagerVideoFile
             return now.ToString("dd-MM-yyyy");
         }
 
-        private static string generateRandomString()
+        public static string generateRandomString()
         {
             var chars = "0123456789";
             var stringChars = new char[6];
