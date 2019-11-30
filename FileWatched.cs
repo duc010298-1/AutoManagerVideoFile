@@ -1,4 +1,7 @@
-﻿using System;
+﻿using NReco.VideoConverter;
+using System;
+using System.Collections;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 
@@ -6,10 +9,15 @@ namespace AutoManagerVideoFile
 {
     class FileWatched
     {
-        private static readonly string filter = "*.txt";
-        public static FileSystemWatcher watcher;
-        public static Config config;
-        public static void initWatched(Config c)
+        private readonly string filter = "*.ts";
+        public FileSystemWatcher watcher;
+        public Config config;
+        private BackgroundWorker backgroundWorker;
+        private string fromPath;
+        private string toPath;
+        private string oldPath;
+        private Queue queue = new Queue();
+        public void initWatched(Config c)
         {
             config = c;
             if (watcher != null)
@@ -27,16 +35,31 @@ namespace AutoManagerVideoFile
             watcher.Created += new FileSystemEventHandler(OnChanged);
             // Activate the watcher
             watcher.EnableRaisingEvents = true;
+
+            backgroundWorker = new BackgroundWorker();
+            backgroundWorker.DoWork += doWork;
+            backgroundWorker.RunWorkerCompleted += workerComplete;
         }
 
-        private static void OnChanged(object source, FileSystemEventArgs e)
+        private void OnChanged(object sender, FileSystemEventArgs e)
         {
-            moveFile(e.FullPath, e.Name);
+            Background.trayIcon.BalloonTipClicked -= new EventHandler(ChangeFileName);
+            Background.trayIcon.BalloonTipTitle = "Phát hiện video mới";
+            Background.trayIcon.BalloonTipText = "Đang trong quá trình xử lý, vui lòng đợi thông báo";
+            Background.trayIcon.ShowBalloonTip(30000);
+            if (backgroundWorker.IsBusy)
+            {
+                queue.Enqueue(e);
+            }
+            else
+            {
+                moveFile(e.FullPath, e.Name);
+            }
         }
 
-        private static void moveFile(string from, string fileName)
+        private void moveFile(string from, string fileName)
         {
-            fileName = Path.GetFileNameWithoutExtension(fileName) + "_" + generateRandomString() + Path.GetExtension(fileName);
+            fileName = Path.GetFileNameWithoutExtension(fileName) + "_" + generateRandomString() + ".mp4";
             string path = Path.Combine(config.OutDirectory, getToday());
             if (!Directory.Exists(path))
             {
@@ -47,21 +70,46 @@ namespace AutoManagerVideoFile
             {
                 File.Delete(path);
             }
+            fromPath = from;
+            toPath = path;
+            backgroundWorker.RunWorkerAsync();
+        }
+
+        private void doWork(object sender, DoWorkEventArgs e)
+        {
             try
             {
-                File.Move(from, path);
+                var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
+                ffMpeg.ConvertMedia(fromPath, toPath, Format.mp4);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 MessageBox.Show("Lỗi! File chưa được di chuyển", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            Background.tempPath = path;
-            Background.trayIcon.BalloonTipText = fileName + "\nClick vào đây để đổi tên file";
-            Background.trayIcon.ShowBalloonTip(30000);
         }
 
-        private static string getToday()
+        private void workerComplete(object sender, RunWorkerCompletedEventArgs e)
+        {
+            oldPath = toPath;
+            Background.trayIcon.BalloonTipClicked -= new EventHandler(ChangeFileName);
+            Background.trayIcon.BalloonTipClicked += new EventHandler(ChangeFileName);
+            Background.trayIcon.BalloonTipTitle = "Thông báo";
+            Background.trayIcon.BalloonTipText = Path.GetFileName(toPath) + "\nClick vào đây để đổi tên file";
+            Background.trayIcon.ShowBalloonTip(30000);
+            if (File.Exists(fromPath))
+            {
+                File.Delete(fromPath);
+            }
+            if (queue.Count != 0)
+            {
+                FileSystemEventArgs fileSystemEvent = (FileSystemEventArgs) queue.Dequeue();
+                moveFile(fileSystemEvent.FullPath, fileSystemEvent.Name);
+            }
+        }
+
+        private string getToday()
         {
             DateTime now = DateTime.Now;
             return now.ToString("dd-MM-yyyy");
@@ -79,6 +127,13 @@ namespace AutoManagerVideoFile
             }
 
             return new String(stringChars);
+        }
+
+        private void ChangeFileName(object sender, EventArgs e)
+        {
+            ChangeFileName changeFileName = new ChangeFileName(oldPath);
+            changeFileName.Show();
+            changeFileName.Activate();
         }
     }
 }
