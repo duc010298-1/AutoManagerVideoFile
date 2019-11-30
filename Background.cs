@@ -7,6 +7,7 @@ namespace AutoManagerVideoFile
     class Background : ApplicationContext
     {
         public static NotifyIcon trayIcon;
+        public static string tempPath;
 
         public Background()
         {
@@ -19,12 +20,13 @@ namespace AutoManagerVideoFile
                     new MenuItem("Cài đặt", Setting),
                     new MenuItem("Thoát", Exit)
                 }),
-                BalloonTipTitle = "",
+                BalloonTipTitle = "Phát hiện video mới",
                 BalloonTipText = "",
                 BalloonTipIcon = ToolTipIcon.Info,
                 Visible = true
             };
             trayIcon.DoubleClick += new EventHandler(this.Setting);
+            trayIcon.BalloonTipClicked += new EventHandler(this.ChangeFileName);
 
             ConfigUtil configUtil = new ConfigUtil();
             Config config = configUtil.getConfig();
@@ -35,9 +37,15 @@ namespace AutoManagerVideoFile
             }
             else
             {
-                FileWatched fileWatched = new FileWatched();
-                fileWatched.initWatched(config);
+                FileWatched.initWatched(config);
             }  
+        }
+
+        void ChangeFileName(object sender, EventArgs e)
+        {
+            ChangeFileName changeFileName = new ChangeFileName(tempPath);
+            changeFileName.Show();
+            changeFileName.Activate();
         }
 
         void Exit(object sender, EventArgs e)
