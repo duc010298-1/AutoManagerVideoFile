@@ -23,8 +23,9 @@ namespace AutoManagerVideoFile
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            FileWatched fileWatched = new FileWatched();
             string newFileName = Path.GetFileNameWithoutExtension(txtFileName.Text) +
-                "_" + FileWatched.generateRandomString() + Path.GetExtension(tempPath);
+                "_" + fileWatched.generateRandomString() + Path.GetExtension(tempPath);
             string newPath = Path.Combine(Path.GetDirectoryName(tempPath), newFileName);
             try
             {

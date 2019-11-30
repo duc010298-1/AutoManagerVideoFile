@@ -37,7 +37,8 @@ namespace AutoManagerVideoFile
             }
             else
             {
-                FileWatched.initWatched(config);
+                FileWatched fileWatched = new FileWatched();
+                fileWatched.initWatched(config);
             }  
         }
 

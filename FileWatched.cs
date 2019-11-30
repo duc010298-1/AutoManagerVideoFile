@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace AutoManagerVideoFile
 {
     class FileWatched
     {
-        private static readonly string filter = "*.txt";
-        public static FileSystemWatcher watcher;
-        public static Config config;
-        public static void initWatched(Config c)
+        private readonly string filter = "*.mp4";
+        public FileSystemWatcher watcher;
+        public Config config;
+        public void initWatched(Config c)
         {
             config = c;
             if (watcher != null)
@@ -29,12 +30,12 @@ namespace AutoManagerVideoFile
             watcher.EnableRaisingEvents = true;
         }
 
-        private static void OnChanged(object source, FileSystemEventArgs e)
+        private void OnChanged(object source, FileSystemEventArgs e)
         {
             moveFile(e.FullPath, e.Name);
         }
 
-        private static void moveFile(string from, string fileName)
+        private void moveFile(string from, string fileName)
         {
             fileName = Path.GetFileNameWithoutExtension(fileName) + "_" + generateRandomString() + Path.GetExtension(fileName);
             string path = Path.Combine(config.OutDirectory, getToday());
@@ -49,10 +50,12 @@ namespace AutoManagerVideoFile
             }
             try
             {
+                Thread.Sleep(500);
                 File.Move(from, path);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 MessageBox.Show("Lỗi! File chưa được di chuyển", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -61,13 +64,13 @@ namespace AutoManagerVideoFile
             Background.trayIcon.ShowBalloonTip(30000);
         }
 
-        private static string getToday()
+        private string getToday()
         {
             DateTime now = DateTime.Now;
             return now.ToString("dd-MM-yyyy");
         }
 
-        public static string generateRandomString()
+        public string generateRandomString()
         {
             var chars = "0123456789";
             var stringChars = new char[6];

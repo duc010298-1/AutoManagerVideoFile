@@ -83,7 +83,8 @@ namespace AutoManagerVideoFile
             }
             ConfigUtil configUtil = new ConfigUtil();
             configUtil.saveConfig(config);
-            FileWatched.initWatched(config);
+            FileWatched fileWatched = new FileWatched();
+            fileWatched.initWatched(config);
             this.Close();
         }
 
